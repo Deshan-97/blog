@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdSense Integration Demo - BlogTok</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪶</text></svg>">
+    <link rel="stylesheet" href="homepage.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .demo-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 16px 0;
+        }
+        
+        .demo-subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin: 0;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 32px 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .ad-slot {
+            background: linear-gradient(45deg, #f0f9ff, #e0f2fe);
+            border: 2px dashed #0ea5e9;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .ad-slot-header {
+            min-height: 90px;
+        }
+        
+        .ad-slot-sidebar {
+            min-height: 250px;
+            width: 300px;
+            float: right;
+            margin: 0 0 20px 20px;
+        }
+        
+        .ad-slot-footer {
+            min-height: 90px;
+        }
+        
+        .ad-placeholder {
+            color: #0369a1;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .ad-details {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        
+        .status-enabled {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-disabled {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        
+        .content-area {
+            line-height: 1.6;
+            color: #374151;
+        }
+        
+        .admin-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .admin-link:hover {
+            background: #2563eb;
+        }
+        
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .ad-slot-sidebar {
+                float: none;
+                width: 100%;
+                margin: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1 class="demo-title">
+                <i class="fas fa-dollar-sign"></i>
+                AdSense Integration Demo
+            </h1>
+            <p class="demo-subtitle">See how Google AdSense ads are integrated into your blog</p>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                AdSense Status
+            </h2>
+            <div id="adsenseStatus" class="status-indicator status-disabled">
+                <i class="fas fa-times-circle"></i>
+                AdSense is currently disabled
+            </div>
+            <p>Configure your AdSense settings in the admin panel to enable ads on your website.</p>
+            <a href="admin.html" class="admin-link">
+                <i class="fas fa-cog"></i>
+                Open Admin Panel
+            </a>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-arrow-up"></i>
+                Header Ad Placement
+            </h2>
+            <div class="ad-slot ad-slot-header">
+                <div class="ad-placeholder">Header Advertisement Area</div>
+                <div class="ad-details" id="headerAdDetails">
+                    No ad configured for this position
+                </div>
+            </div>
+            <p>Header ads appear at the top of your pages and are great for maximum visibility.</p>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-newspaper"></i>
+                Content with Sidebar Ads
+            </h2>
+            <div class="grid-layout">
+                <div class="content-area">
+                    <h3>Sample Blog Content</h3>
+                    <p>This is where your blog content would appear. The sidebar ad on the right (or below on mobile) 
+                    would display relevant advertisements to your readers. Sidebar ads are effective because they're 
+                    visible while users read your content without being intrusive.</p>
+                    
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut 
+                    labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                    nisi ut aliquip ex ea commodo consequat.</p>
+                    
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla 
+                    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt 
+                    mollit anim id est laborum.</p>
+                </div>
+                
+                <div>
+                    <div class="ad-slot ad-slot-sidebar">
+                        <div class="ad-placeholder">Sidebar Advertisement</div>
+                        <div class="ad-details" id="sidebarAdDetails">
+                            No ad configured for this position
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-arrow-down"></i>
+                Footer Ad Placement
+            </h2>
+            <div class="ad-slot ad-slot-footer">
+                <div class="ad-placeholder">Footer Advertisement Area</div>
+                <div class="ad-details" id="footerAdDetails">
+                    No ad configured for this position
+                </div>
+            </div>
+            <p>Footer ads appear at the bottom of your pages and can capture attention as users finish reading.</p>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-code"></i>
+                Technical Implementation
+            </h2>
+            <p>When AdSense is enabled, the following code is automatically injected into your pages:</p>
+            
+            <h4>Auto Ads Script (if enabled):</h4>
+            <div class="code-block" id="autoAdsCode">
+&lt;!-- Google AdSense --&gt;
+&lt;script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXX"
+        crossorigin="anonymous"&gt;&lt;/script&gt;
+&lt;script&gt;
+    (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-XXXXXXXXX",
+        enable_page_level_ads: true
+    });
+&lt;/script&gt;
+            </div>
+
+            <h4>Display Ad Code (for each ad slot):</h4>
+            <div class="code-block" id="displayAdCode">
+&lt;ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-XXXXXXXXX"
+     data-ad-slot="YYYYYYYYYY"
+     data-ad-format="auto"
+     data-full-width-responsive="true"&gt;&lt;/ins&gt;
+&lt;script&gt;
+     (adsbygoogle = window.adsbygoogle || []).push({});
+&lt;/script&gt;
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load AdSense status and update the demo
+        async function loadAdSenseStatus() {
+            try {
+                const response = await fetch('/api/adsense-settings');
+                const settings = await response.json();
+                
+                const statusElement = document.getElementById('adsenseStatus');
+                const isEnabled = settings.adsense_enabled === 'true' && settings.adsense_client_id;
+                
+                if (isEnabled) {
+                    statusElement.className = 'status-indicator status-enabled';
+                    statusElement.innerHTML = '<i class="fas fa-check-circle"></i> AdSense is enabled and configured';
+                    
+                    // Update ad details
+                    updateAdDetails('header', settings);
+                    updateAdDetails('sidebar', settings);
+                    updateAdDetails('footer', settings);
+                    
+                    // Update code examples
+                    updateCodeExamples(settings);
+                } else {
+                    statusElement.className = 'status-indicator status-disabled';
+                    statusElement.innerHTML = '<i class="fas fa-times-circle"></i> AdSense is currently disabled';
+                }
+            } catch (error) {
+                console.error('Error loading AdSense status:', error);
+            }
+        }
+        
+        function updateAdDetails(position, settings) {
+            const element = document.getElementById(`${position}AdDetails`);
+            const slotId = settings[`adsense_ad_slot_${position}`];
+            const clientId = settings.adsense_client_id;
+            
+            if (slotId && clientId) {
+                element.innerHTML = `
+                    <strong>Client ID:</strong> ${clientId}<br>
+                    <strong>Ad Slot ID:</strong> ${slotId}<br>
+                    <strong>Status:</strong> <span style="color: #059669;">Active</span>
+                `;
+            } else {
+                element.innerHTML = `No ad slot configured for ${position} position`;
+            }
+        }
+        
+        function updateCodeExamples(settings) {
+            const autoAdsCode = document.getElementById('autoAdsCode');
+            const displayAdCode = document.getElementById('displayAdCode');
+            const clientId = settings.adsense_client_id || 'ca-pub-XXXXXXXXX';
+            
+            if (settings.adsense_auto_ads === 'true') {
+                autoAdsCode.innerHTML = `&lt;!-- Google AdSense --&gt;
+&lt;script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}"
+        crossorigin="anonymous"&gt;&lt;/script&gt;
+&lt;script&gt;
+    (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "${clientId}",
+        enable_page_level_ads: true
+    });
+&lt;/script&gt;`;
+            }
+            
+            const sampleSlotId = settings.adsense_ad_slot_header || 'YYYYYYYYYY';
+            displayAdCode.innerHTML = `&lt;ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="${clientId}"
+     data-ad-slot="${sampleSlotId}"
+     data-ad-format="auto"
+     data-full-width-responsive="true"&gt;&lt;/ins&gt;
+&lt;script&gt;
+     (adsbygoogle = window.adsbygoogle || []).push({});
+&lt;/script&gt;`;
+        }
+        
+        // Load status when page loads
+        document.addEventListener('DOMContentLoaded', loadAdSenseStatus);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#1e293b">
+  <title>BlogTok Admin - Category Management</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪶</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .admin-sidebar {
+      width: 260px;
+      background: #1e293b;
+      color: white;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      text-decoration: none;
+    }
+
+    .sidebar-nav {
+      padding: 20px 0;
+    }
+
+    .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: #334155;
+      color: white;
+      border-left-color: #3b82f6;
+    }
+
+    .nav-link.active {
+      background: #334155;
+      color: white;
+      border-left-color: #3b82f6;
+    }
+
+    /* Main Content */
+    .admin-main {
+      flex: 1;
+      margin-left: 260px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .admin-header {
+      background: white;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hamburger-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #64748b;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: #64748b;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .header-btn:hover {
+      background: #f1f5f9;
+    }
+
+    .header-btn.primary {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+
+    .header-btn.primary:hover {
+      background: #2563eb;
+    }
+
+    .admin-content {
+      padding: 24px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 32px;
+      max-width: 1400px;
+    }
+
+    .form-card, .list-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .form-card:hover, .list-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .form-card {
+      height: fit-content;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      background: #fafafa;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .form-input:hover, .form-textarea:hover {
+      border-color: #cbd5e1;
+      background: white;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 14px;
+      border-radius: 6px;
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+    }
+
+    .btn-edit:hover {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-delete {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-delete:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Enhanced Table Styles for Desktop */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    .table th {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      padding: 20px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
+      border-bottom: 2px solid #e2e8f0;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .table td {
+      padding: 20px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 15px;
+      vertical-align: middle;
+    }
+
+    .table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      transform: scale(1.01);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Enhanced action buttons spacing */
+    .table td:last-child {
+      white-space: nowrap;
+      padding: 16px;
+    }
+
+    .table td:last-child .btn-sm {
+      margin: 0 4px;
+    }
+
+    .empty-state, .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .loading {
+      color: #3b82f6;
+    }
+
+    /* Notifications */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      border-left: 4px solid #10b981;
+      z-index: 2000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.error {
+      border-left-color: #ef4444;
+    }
+
+    /* Enhanced Mobile Responsive */
+    @media (max-width: 1024px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .admin-main {
+        margin-left: 0;
+      }
+      
+      .admin-sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .hamburger-btn {
+        display: block;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .admin-main {
+        margin-left: 0;
+      }
+
+      .hamburger-btn {
+        display: block;
+        padding: 8px;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+      }
+
+      .hamburger-btn:hover {
+        background: #f1f5f9;
+      }
+
+      .admin-content {
+        padding: 12px;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .form-card, .list-card {
+        padding: 20px;
+        border-radius: 12px;
+      }
+
+      .table-container {
+        font-size: 14px;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .table th, .table td {
+        padding: 12px 8px;
+        font-size: 13px;
+      }
+
+      .table th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+        border-radius: 8px;
+        min-height: 44px;
+        touch-action: manipulation;
+      }
+
+      .btn-sm {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-height: 36px;
+        margin: 2px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .form-input, .form-textarea {
+        padding: 14px 16px;
+        font-size: 16px;
+        border-radius: 8px;
+        min-height: 48px;
+      }
+
+      .form-textarea {
+        min-height: 100px;
+      }
+
+      /* Enhanced table responsiveness */
+      .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .table {
+        min-width: 500px;
+      }
+
+      /* Mobile action buttons layout */
+      .table td:last-child {
+        white-space: nowrap;
+      }
+
+      .table td:last-child .btn-sm {
+        display: inline-block;
+        margin: 1px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .admin-header {
+        padding: 10px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .page-title {
+        font-size: 18px;
+        line-height: 1.2;
+      }
+
+      .card-title {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      .form-card, .list-card {
+        padding: 16px;
+        margin: 0 -4px;
+        border-radius: 16px;
+      }
+
+      .admin-content {
+        padding: 8px;
+      }
+
+      .content-grid {
+        gap: 12px;
+      }
+
+      .form-input, .form-textarea {
+        font-size: 16px;
+        padding: 16px;
+        border-radius: 12px;
+      }
+
+      .btn {
+        padding: 14px 20px;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 12px;
+        min-height: 48px;
+      }
+
+      .btn-sm {
+        padding: 10px 14px;
+        font-size: 13px;
+        min-height: 40px;
+        margin: 2px;
+        border-radius: 8px;
+      }
+
+      /* Stack action buttons vertically on very small screens */
+      .table td:last-child {
+        padding: 8px 4px;
+      }
+
+      .table td:last-child .btn-sm {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+        text-align: center;
+      }
+
+      /* Simplified table for mobile */
+      .table th:nth-child(3),
+      .table td:nth-child(3) {
+        display: none;
+      }
+
+      .table {
+        min-width: 350px;
+      }
+
+      /* Mobile sidebar improvements */
+      .admin-sidebar {
+        width: 260px;
+      }
+
+      .nav-link {
+        padding: 16px 20px;
+        font-size: 15px;
+      }
+
+      .sidebar-logo {
+        font-size: 18px;
+        padding: 4px 0;
+      }
+
+      /* Touch-friendly notifications */
+      .notification {
+        right: 12px;
+        left: 12px;
+        top: 80px;
+        border-radius: 12px;
+        padding: 16px 20px;
+        font-size: 14px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      }
+    }
+
+    @media (max-width: 360px) {
+      .admin-header {
+        padding: 8px 10px;
+      }
+
+      .page-title {
+        font-size: 16px;
+      }
+
+      .form-card, .list-card {
+        padding: 12px;
+        margin: 0 -2px;
+      }
+
+      .admin-content {
+        padding: 6px;
+      }
+
+      .btn-sm {
+        font-size: 11px;
+        padding: 8px 10px;
+      }
+
+      .table th, .table td {
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+    }
+
+    /* Touch and interaction improvements */
+    @media (hover: none) and (pointer: coarse) {
+      .btn:hover {
+        transform: none;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+      }
+
+      .nav-link:hover {
+        background: #334155;
+      }
+
+      .nav-link:active {
+        background: #475569;
+      }
+
+      .table tr:hover {
+        background: transparent;
+      }
+
+      .table tr:active {
+        background: #f8fafc;
+      }
+    }
+
+    /* iOS Safari specific fixes */
+    @supports (-webkit-touch-callout: none) {
+      .form-input, .form-textarea {
+        font-size: 16px; /* Prevents zoom on focus */
+      }
+
+      .admin-sidebar {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .table-container {
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    /* Enhanced loading states for mobile */
+    .btn:disabled {
+      opacity: 0.7;
+      transform: none;
+    }
+
+    .loading {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Desktop-specific enhancements */
+    @media (min-width: 1025px) {
+      .admin-content {
+        padding: 40px 48px;
+      }
+
+      .content-grid {
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .form-card {
+        animation: slideInLeft 0.6s ease-out;
+      }
+
+      .list-card {
+        animation: slideInRight 0.6s ease-out;
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Enhanced hover effects for desktop */
+      .nav-link {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.6s;
+      }
+
+      .nav-link:hover::before {
+        left: 100%;
+      }
+
+      /* Desktop table enhancements */
+      .table tbody tr {
+        cursor: default;
+      }
+
+      .table tbody tr:hover {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        transform: scale(1.005);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      /* Smooth scrollbar for desktop */
+      .table-container::-webkit-scrollbar {
+        height: 8px;
+      }
+
+      .table-container::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+      }
+
+      .table-container::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+
+      .table-container::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      /* Enhanced notifications for desktop */
+      .notification {
+        min-width: 300px;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+      }
+
+      /* Desktop form enhancements */
+      .form-group {
+        margin-bottom: 24px;
+      }
+
+      .form-label {
+        font-size: 15px;
+        margin-bottom: 8px;
+      }
+
+      .card-title {
+        font-size: 22px;
+        margin-bottom: 28px;
+      }
+
+      /* Desktop action buttons with better spacing */
+      .form-actions {
+        gap: 16px;
+        margin-top: 32px;
+      }
+
+      /* Enhanced focus states for keyboard navigation */
+      .btn:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+      }
+
+      .form-input:focus, .form-textarea:focus {
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      }
+
+      /* Desktop category count badge */
+      .category-count {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 8px;
+      }
+    }
+
+    /* Large desktop optimizations */
+    @media (min-width: 1440px) {
+      .content-grid {
+        max-width: 1600px;
+        grid-template-columns: 450px 1fr;
+        gap: 40px;
+      }
+
+      .admin-content {
+        padding: 48px 64px;
+      }
+
+      .form-card, .list-card {
+        padding: 40px;
+      }
+
+      .table th, .table td {
+        padding: 24px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="admin-sidebar" id="adminSidebar">
+       <div class="sidebar-header">
+                <a href="admin.html" class="sidebar-logo">
+                    <i class="fas fa-feather"></i>
+                    <span>BlogTok Admin</span>
+                </a>
+            </div>
+      <nav class="sidebar-nav">
+         <div class="nav-item">
+          <a href="admin.html" class="nav-link">
+            <i class="fas fa-cog"></i>
+            <span>Dashboard</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="add-article.html" class="nav-link">
+            <i class="fas fa-plus-circle"></i>
+            <span>Add Article</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="manage-articles.html" class="nav-link">
+            <i class="fas fa-edit"></i>
+            <span>Manage Articles</span>
+          </a>
+        </div>
+           <div class="nav-item">
+                    <a href="category.html" class="nav-link">
+                        <i class="fas fa-folder"></i>
+                        <span>Categories</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="goToAboutManagement(); return false;">
+                        <i class="fas fa-info-circle"></i>
+                        <span>About Page</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" onclick="goToAdSenseSettings(); return false;">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>AdSense Settings</span>
+                    </a>
+                </div>
+        <div class="nav-item">
+          <a href="index.html" class="nav-link" target="_blank">
+            <i class="fas fa-external-link-alt"></i>
+            <span>View Main Site</span>
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+      <!-- Header -->
+      <div class="admin-header">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="hamburger-btn" id="hamburgerBtn">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="page-title">Category Management</h1>
+        </div>
+        <div class="header-right">
+          <a href="../index.html" class="header-btn">
+            <i class="fas fa-home"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="admin-content">
+        <div class="content-grid">
+          <!-- Add Category Form -->
+          <div class="form-card">
+            <h2 class="card-title" id="formTitle">
+              <i class="fas fa-plus-circle"></i>
+              Add New Category
+              <span class="keyboard-help" style="font-size: 12px; color: #64748b; font-weight: 400; margin-left: auto; display: none;" title="Keyboard Shortcuts: Ctrl+N to focus, Ctrl+S to save, Esc to cancel">
+                <i class="fas fa-keyboard"></i>
+              </span>
+            </h2>
+            <form id="categoryForm">
+              <input type="hidden" id="categoryId">
+              
+              <div class="form-group">
+                <label for="categoryName" class="form-label">Category Name *</label>
+                <input type="text" id="categoryName" class="form-input" placeholder="Enter category name" required autocomplete="off" autocapitalize="words">
+              </div>
+
+              <div class="form-group">
+                <label for="categoryDescription" class="form-label">Description</label>
+                <textarea id="categoryDescription" class="form-textarea" rows="3" placeholder="Enter category description (optional)" autocomplete="off" autocapitalize="sentences"></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="saveButton">
+                  <i class="fas fa-save"></i>
+                  Save Category
+                </button>
+                <button type="button" class="btn btn-secondary" id="cancelButton" style="display: none;">
+                  <i class="fas fa-times"></i>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Categories List -->
+          <div class="list-card">
+            <h2 class="card-title">
+              <i class="fas fa-list"></i>
+              Existing Categories
+            </h2>
+            
+            <!-- Desktop search feature -->
+            <div class="desktop-search" style="margin-bottom: 20px; display: none;">
+              <div style="position: relative;">
+                <input type="text" id="categorySearch" placeholder="Search categories..." style="width: 100%; padding: 12px 16px 12px 40px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+              </div>
+            </div>
+            
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Created Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="categoriesList">
+                  <!-- Categories will be loaded here dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const categoryForm = document.getElementById('categoryForm');
+      const formTitle = document.getElementById('formTitle');
+      const categoryId = document.getElementById('categoryId');
+      const categoryName = document.getElementById('categoryName');
+      const categoryDescription = document.getElementById('categoryDescription');
+      const saveButton = document.getElementById('saveButton');
+      const cancelButton = document.getElementById('cancelButton');
+      const categoriesList = document.getElementById('categoriesList');
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const adminSidebar = document.getElementById('adminSidebar');
+      
+      // Desktop search functionality
+      const categorySearch = document.getElementById('categorySearch');
+      let allCategories = []; // Store all categories for filtering
+      
+      // Show search on desktop
+      if (window.innerWidth > 1024) {
+        document.querySelector('.desktop-search').style.display = 'block';
+        document.querySelector('.keyboard-help').style.display = 'block';
+        
+        // Add search functionality
+        if (categorySearch) {
+          categorySearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            filterCategories(searchTerm);
+          });
+        }
+      }
+      
+      // Enhanced mobile menu toggle
+      if (hamburgerBtn && adminSidebar) {
+        hamburgerBtn.addEventListener('click', function() {
+          adminSidebar.classList.toggle('open');
+          
+          // Prevent body scroll when sidebar is open on mobile
+          if (window.innerWidth <= 768) {
+            document.body.style.overflow = adminSidebar.classList.contains('open') ? 'hidden' : '';
+          }
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+          if (window.innerWidth <= 768 && 
+              !adminSidebar.contains(event.target) && 
+              !hamburgerBtn.contains(event.target) &&
+              adminSidebar.classList.contains('open')) {
+            adminSidebar.classList.remove('open');
+            document.body.style.overflow = '';
+          }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 768) {
+            adminSidebar.classList.remove('open');
+            document.body.style.overflow = '';
+          }
+        });
+
+        // Handle escape key to close sidebar
+        document.addEventListener('keydown', function(event) {
+          if (event.key === 'Escape' && adminSidebar.classList.contains('open')) {
+            adminSidebar.classList.remove('open');
+            document.body.style.overflow = '';
+          }
+        });
+      }
+      
+      // Load all categories when the page loads
+      fetchCategories();
+      
+      // Desktop keyboard shortcuts
+      document.addEventListener('keydown', function(event) {
+        // Ctrl+N or Cmd+N to focus on new category input
+        if ((event.ctrlKey || event.metaKey) && event.key === 'n') {
+          event.preventDefault();
+          categoryName.focus();
+        }
+        
+        // Ctrl+S or Cmd+S to save form
+        if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+          event.preventDefault();
+          if (document.activeElement === categoryName || document.activeElement === categoryDescription) {
+            categoryForm.dispatchEvent(new Event('submit'));
+          }
+        }
+        
+        // Escape to cancel editing
+        if (event.key === 'Escape') {
+          if (cancelButton.style.display !== 'none') {
+            resetForm();
+          }
+          if (adminSidebar.classList.contains('open')) {
+            adminSidebar.classList.remove('open');
+            document.body.style.overflow = '';
+          }
+        }
+      });
+      
+      // Enhanced form submission with better mobile UX
+      categoryForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Hide mobile keyboard
+        document.activeElement.blur();
+        
+        const category = {
+          name: categoryName.value.trim(),
+          description: categoryDescription.value.trim()
+        };
+        
+        // Enhanced validation
+        if (!category.name) {
+          showNotification('❌ Category name is required!', 'error');
+          categoryName.focus();
+          if (window.innerWidth > 1024) {
+            categoryName.style.borderColor = '#ef4444';
+            categoryName.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.1)';
+            setTimeout(() => {
+              categoryName.style.borderColor = '';
+              categoryName.style.boxShadow = '';
+            }, 3000);
+          }
+          return;
+        }
+        
+        if (category.name.length < 2) {
+          showNotification('❌ Category name must be at least 2 characters long!', 'error');
+          categoryName.focus();
+          if (window.innerWidth > 1024) {
+            categoryName.style.borderColor = '#ef4444';
+            categoryName.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.1)';
+            setTimeout(() => {
+              categoryName.style.borderColor = '';
+              categoryName.style.boxShadow = '';
+            }, 3000);
+          }
+          return;
+        }
+        
+        if (categoryId.value) {
+          // Update existing category
+          updateCategory(categoryId.value, category);
+        } else {
+          // Create new category
+          createCategory(category);
+        }
+      });
+      
+      // Handle cancel button click
+      cancelButton.addEventListener('click', resetForm);
+      
+      // Function to fetch all categories
+      function fetchCategories() {
+        console.log('Fetching categories...');
+        categoriesList.innerHTML = '<tr><td colspan="4" class="loading">Loading categories...</td></tr>';
+        
+        fetch('/api/categories')
+          .then(response => {
+            console.log('Fetch categories response status:', response.status);
+            if (!response.ok) {
+              throw new Error('Failed to fetch categories');
+            }
+            return response.json();
+          })
+          .then(categories => {
+            console.log('Categories fetched:', categories);
+            allCategories = categories; // Store for filtering
+            displayCategories(categories);
+          })
+          .catch(error => {
+            console.error('Error fetching categories:', error);
+            categoriesList.innerHTML = '<tr><td colspan="4" class="empty-state">❌ Failed to load categories. Please try again.</td></tr>';
+          });
+      }
+      
+      // Function to display categories in the table
+      function displayCategories(categories) {
+        if (categories.length === 0) {
+          categoriesList.innerHTML = '<tr><td colspan="4" class="empty-state">📂 No categories found. Create your first category!</td></tr>';
+          return;
+        }
+        
+        // Update category count in header (desktop feature)
+        updateCategoryCount(categories.length);
+        
+        categoriesList.innerHTML = '';
+        
+        categories.forEach((category, index) => {
+          const tr = document.createElement('tr');
+          const createdDate = new Date(category.created_at).toLocaleDateString();
+          
+          // Add animation delay for desktop
+          if (window.innerWidth > 1024) {
+            tr.style.animationDelay = `${index * 0.1}s`;
+            tr.style.animation = 'fadeInUp 0.6s ease-out forwards';
+          }
+          
+          tr.innerHTML = `
+            <td><strong>${escapeHtml(category.name)}</strong></td>
+            <td>${escapeHtml(category.description || 'No description')}</td>
+            <td>${createdDate}</td>
+            <td>
+              <button class="btn btn-edit btn-sm" data-id="${category.id}" title="Edit category (Double-click on row)">
+                <i class="fas fa-edit"></i>
+                Edit
+              </button>
+              <button class="btn btn-delete btn-sm" data-id="${category.id}" title="Delete category">
+                <i class="fas fa-trash"></i>
+                Delete
+              </button>
+            </td>
+          `;
+          
+          // Add double-click to edit for desktop
+          if (window.innerWidth > 1024) {
+            tr.addEventListener('dblclick', function() {
+              editCategory(category.id);
+            });
+            tr.style.cursor = 'pointer';
+            tr.title = 'Double-click to edit';
+          }
+          
+          categoriesList.appendChild(tr);
+        });
+        
+        // Add CSS for row animation
+        if (window.innerWidth > 1024) {
+          const style = document.createElement('style');
+          style.textContent = `
+            @keyframes fadeInUp {
+              from {
+                opacity: 0;
+                transform: translateY(20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          `;
+          if (!document.getElementById('rowAnimation')) {
+            style.id = 'rowAnimation';
+            document.head.appendChild(style);
+          }
+        }
+        
+        // Add event listeners to edit and delete buttons
+        document.querySelectorAll('.btn-edit').forEach(button => {
+          button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            editCategory(id);
+          });
+        });
+        
+        document.querySelectorAll('.btn-delete').forEach(button => {
+          button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            deleteCategory(id);
+          });
+        });
+      }
+      
+      // Function to filter categories (desktop feature)
+      function filterCategories(searchTerm) {
+        if (!searchTerm) {
+          displayCategories(allCategories);
+          return;
+        }
+        
+        const filteredCategories = allCategories.filter(category => 
+          category.name.toLowerCase().includes(searchTerm) ||
+          (category.description && category.description.toLowerCase().includes(searchTerm))
+        );
+        
+        displayCategories(filteredCategories);
+      }
+      
+      // Function to update category count badge (desktop feature)
+      function updateCategoryCount(count) {
+        if (window.innerWidth > 1024) {
+          const listTitle = document.querySelector('.list-card .card-title');
+          const existingBadge = listTitle.querySelector('.category-count');
+          if (existingBadge) {
+            existingBadge.textContent = count;
+          } else {
+            const badge = document.createElement('span');
+            badge.className = 'category-count';
+            badge.textContent = count;
+            listTitle.appendChild(badge);
+          }
+        }
+      }
+      
+      // Function to create a new category
+      function createCategory(category) {
+        console.log('Creating category:', category);
+        saveButton.disabled = true;
+        saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        
+        fetch('/api/categories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(category)
+        })
+        .then(response => {
+          console.log('Create response status:', response.status);
+          if (!response.ok) {
+            return response.json().then(err => { throw err; });
+          }
+          return response.json();
+        })
+        .then((result) => {
+          console.log('Category created successfully:', result);
+          resetForm();
+          // Force refresh the categories list
+          setTimeout(() => {
+            fetchCategories();
+          }, 100);
+          showNotification('✅ Category created successfully!', 'success');
+        })
+        .catch(error => {
+          console.error('Error creating category:', error);
+          showNotification(error.error || '❌ Failed to create category. Please try again.', 'error');
+        })
+        .finally(() => {
+          saveButton.disabled = false;
+          saveButton.innerHTML = '<i class="fas fa-save"></i> Save Category';
+        });
+      }
+      
+      // Function to update an existing category
+      function updateCategory(id, category) {
+        saveButton.disabled = true;
+        saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        
+        fetch(`/api/categories/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(category)
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => { throw err; });
+          }
+          return response.json();
+        })
+        .then(() => {
+          resetForm();
+          fetchCategories();
+          showNotification('✅ Category updated successfully!', 'success');
+        })
+        .catch(error => {
+          console.error('Error updating category:', error);
+          showNotification(error.error || '❌ Failed to update category. Please try again.', 'error');
+        })
+        .finally(() => {
+          saveButton.disabled = false;
+          saveButton.innerHTML = '<i class="fas fa-save"></i> Save Category';
+        });
+      }
+      
+      // Function to edit a category
+      function editCategory(id) {
+        fetch(`/api/categories/${id}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch category');
+            }
+            return response.json();
+          })
+          .then(category => {
+            categoryId.value = category.id;
+            categoryName.value = category.name;
+            categoryDescription.value = category.description || '';
+            
+            formTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Category';
+            saveButton.innerHTML = '<i class="fas fa-save"></i> Update Category';
+            cancelButton.style.display = 'inline-flex';
+            
+            // Scroll to form
+            document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth' });
+          })
+          .catch(error => {
+            console.error('Error fetching category:', error);
+            showNotification('❌ Failed to load category details.', 'error');
+          });
+      }
+      
+      // Function to delete a category
+      function deleteCategory(id) {
+        if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
+          return;
+        }
+        
+        fetch(`/api/categories/${id}`, {
+          method: 'DELETE'
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => { throw err; });
+          }
+          return response.json();
+        })
+        .then(() => {
+          fetchCategories();
+          showNotification('✅ Category deleted successfully!', 'success');
+        })
+        .catch(error => {
+          console.error('Error deleting category:', error);
+          showNotification(error.error || '❌ Failed to delete category. Please try again.', 'error');
+        });
+      }
+      
+      // Function to reset the form
+      function resetForm() {
+        categoryForm.reset();
+        categoryId.value = '';
+        formTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Category';
+        saveButton.innerHTML = '<i class="fas fa-save"></i> Save Category';
+        cancelButton.style.display = 'none';
+      }
+      
+      // Enhanced notification function with mobile optimization
+      function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+        notification.textContent = message;
+        
+        // Add touch/click to dismiss on mobile
+        notification.addEventListener('click', function() {
+          notification.classList.remove('show');
+          setTimeout(() => notification.remove(), 300);
+        });
+        
+        document.body.appendChild(notification);
+        
+        // Trigger animation
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        // Auto-remove notification (longer on mobile for better readability)
+        const timeout = window.innerWidth <= 768 ? 4000 : 3000;
+        setTimeout(() => {
+          if (notification.classList.contains('show')) {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+          }
+        }, timeout);
+      }
+      
+      // Add mobile-specific touch interactions
+      if ('ontouchstart' in window) {
+        // Add touch feedback to buttons
+        document.addEventListener('touchstart', function(e) {
+          if (e.target.classList.contains('btn')) {
+            e.target.style.transform = 'scale(0.98)';
+          }
+        });
+        
+        document.addEventListener('touchend', function(e) {
+          if (e.target.classList.contains('btn')) {
+            setTimeout(() => {
+              e.target.style.transform = '';
+            }, 150);
+          }
+        });
+      }
+      
+      // Enhanced scroll behavior for mobile
+      function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      
+      // Auto-scroll to form when editing on mobile
+      function editCategory(id) {
+        fetch(`/api/categories/${id}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch category');
+            }
+            return response.json();
+          })
+          .then(category => {
+            categoryId.value = category.id;
+            categoryName.value = category.name;
+            categoryDescription.value = category.description || '';
+            
+            formTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Category';
+            saveButton.innerHTML = '<i class="fas fa-save"></i> Update Category';
+            cancelButton.style.display = 'inline-flex';
+            
+            // Enhanced scroll behavior for mobile
+            if (window.innerWidth <= 768) {
+              // Close mobile sidebar if open
+              if (adminSidebar.classList.contains('open')) {
+                adminSidebar.classList.remove('open');
+                document.body.style.overflow = '';
+              }
+              
+              // Scroll to form with offset for mobile header
+              setTimeout(() => {
+                const formCard = document.querySelector('.form-card');
+                const headerHeight = document.querySelector('.admin-header').offsetHeight;
+                const offsetTop = formCard.offsetTop - headerHeight - 20;
+                
+                window.scrollTo({
+                  top: offsetTop,
+                  behavior: 'smooth'
+                });
+              }, 100);
+            } else {
+              document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth' });
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching category:', error);
+            showNotification('❌ Failed to load category details.', 'error');
+          });
+      }
+      
+      // Function to escape HTML
+      function escapeHtml(text) {
+        const map = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        };
+        return text ? text.replace(/[&<>"']/g, function(m) { return map[m]; }) : '';
+      }
+      
+      // Add mobile-specific performance optimizations
+      if (window.innerWidth <= 768) {
+        // Optimize table rendering for mobile
+        const style = document.createElement('style');
+        style.textContent = `
+          .table-container {
+            will-change: scroll-position;
+          }
+          .admin-sidebar {
+            will-change: transform;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    });
+    
+    // Navigate to About Page Management
+    function goToAboutManagement() {
+        // Store the target section in sessionStorage
+        sessionStorage.setItem('openAboutManagement', 'true');
+        // Redirect to admin dashboard
+        window.location.href = 'admin.html';
+    }
+
+    // Navigate to AdSense Settings
+    function goToAdSenseSettings() {
+        // Store the target section in sessionStorage
+        sessionStorage.setItem('openAdSenseSettings', 'true');
+        // Redirect to admin dashboard
+        window.location.href = 'admin.html';
+    }
+  </script>
+</body>
+</html>

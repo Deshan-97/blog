@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Navigation</title>
+    <link rel="stylesheet" href="homepage.css">
+</head>
+<body>
+
+<!-- Hamburger Menu Button -->
+<button class="hamburger-menu" id="hamburgerBtn" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="hamburgerMenu">
+    <div class="mobile-menu-header">
+        <h2>BlogTok</h2>
+        <button class="close-menu" id="closeMenu" aria-label="Close menu">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <nav class="mobile-nav">
+        <a href="/" class="mobile-nav-link">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <div class="mobile-nav-link category-toggle" onclick="toggleCategoryMenu()">
+            <i class="fas fa-th-large"></i>
+            <span>Categories</span>
+            <i class="fas fa-chevron-down chevron"></i>
+        </div>
+        <div class="category-submenu" id="categorySubmenu">
+            <!-- Categories loaded dynamically -->
+        </div>
+        <a href="/bookmarks.html" class="mobile-nav-link">
+            <i class="fas fa-bookmark"></i>
+            <span>Bookmarks</span>
+        </a>
+        <a href="/about.html" class="mobile-nav-link">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+        <a href="/admin-panel.html" class="mobile-nav-link">
+            <i class="fas fa-user-shield"></i>
+            <span>Admin</span>
+        </a>
+        <a href="/manage-articles.html" class="mobile-nav-link">
+            <i class="fas fa-edit"></i>
+            <span>Manage Articles</span>
+        </a>
+        <a href="/add-article.html" class="mobile-nav-link">
+            <i class="fas fa-plus-circle"></i>
+            <span>Add Article</span>
+        </a>
+    </nav>
+</div>
+<script src="uni-nav.js"></script>
+</body>
+</body>
+</html>

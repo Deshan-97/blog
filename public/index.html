@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Style Blog</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪶</text></svg>">
+    <link rel="stylesheet" href="homepage.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <div class="nav-content">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-feather"></i>
+                    <span>BlogTok</span>
+                </a>
+                
+                <!-- Desktop Navigation -->
+                <div class="desktop-nav">
+                    <ul class="desktop-nav-links">
+                        <li><a href="index.html" class="desktop-nav-link active">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a></li>
+                        <li class="desktop-categories">
+                            <a href="#" class="desktop-nav-link" id="desktopCategoriesToggle">
+                                <i class="fas fa-th-large"></i>
+                                <span>Categories</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <div class="desktop-categories-dropdown" id="desktopCategoryDropdown">
+                                <a href="#" class="desktop-category-link" onclick="clearCategoryFilter()">
+                                    <i class="fas fa-list"></i>
+                                    <span>All Articles</span>
+                                </a>
+                                <!-- Categories will be loaded here dynamically -->
+                            </div>
+                        </li>
+                        <li><a href="bookmarks.html" class="desktop-nav-link">
+                            <i class="fas fa-bookmark"></i>
+                            <span>Bookmarks</span>
+                        </a></li>
+                        <li><a href="about.html" class="desktop-nav-link">
+                            <i class="fas fa-info-circle"></i>
+                            <span>About</span>
+                        </a></li>
+                        <li><button class="desktop-nav-link search-btn">
+                            <i class="fas fa-search"></i>
+                            <span>Search</span>
+                        </button></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="nav-btn search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="nav-btn menu-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="articles-container" id="articlesContainer">
+                <!-- Article 1 -->
+                <article class="article-card active" data-article-id="article-1" data-bg="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                    <div class="article-background"></div>
+                    <div class="article-overlay"></div>
+                    <div class="article-content">
+                        <div class="article-header">
+                            <span class="category">Technology</span>
+                            <span class="read-time">5 min read</span>
+                        </div>
+                        <h1 class="article-title">The Future of Artificial Intelligence in Web Development</h1>
+                        <p class="article-excerpt">Discover how AI is revolutionizing the way we build and interact with websites, from automated coding to intelligent user experiences.</p>
+                    </div>
+                </article>
+
+                <!-- Article 2 -->
+                <article class="article-card" data-article-id="article-2" data-bg="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                    <div class="article-background"></div>
+                    <div class="article-overlay"></div>
+                    <div class="article-content">
+                        <div class="article-header">
+                            <span class="category">Design</span>
+                            <span class="read-time">3 min read</span>
+                        </div>
+                        <h1 class="article-title">Minimalist Design Trends That Will Dominate 2025</h1>
+                        <p class="article-excerpt">Explore the latest minimalist design principles that are shaping user interfaces and creating more intuitive digital experiences.</p>
+                    </div>
+                </article>
+
+                <!-- Article 3 -->
+                <article class="article-card" data-article-id="article-3" data-bg="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                    <div class="article-background"></div>
+                    <div class="article-overlay"></div>
+                    <div class="article-content">
+                        <div class="article-header">
+                            <span class="category">Business</span>
+                            <span class="read-time">7 min read</span>
+                        </div>
+                        <h1 class="article-title">Remote Work Revolution: Building Effective Digital Teams</h1>
+                        <p class="article-excerpt">Learn strategies for managing remote teams, maintaining productivity, and fostering collaboration in a distributed work environment.</p>
+                    </div>
+                </article>
+
+                <!-- Article 4 -->
+                <article class="article-card" data-article-id="article-4" data-bg="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                    <div class="article-background"></div>
+                    <div class="article-overlay"></div>
+                    <div class="article-content">
+                        <div class="article-header">
+                            <span class="category">Health</span>
+                            <span class="read-time">4 min read</span>
+                        </div>
+                        <h1 class="article-title">Digital Wellness: Balancing Screen Time in the Modern Age</h1>
+                        <p class="article-excerpt">Discover practical tips for maintaining mental health and productivity while navigating our increasingly digital world.</p>
+                    </div>
+                </article>
+
+                <!-- Article 5 -->
+                <article class="article-card" data-article-id="article-5" data-bg="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                    <div class="article-background"></div>
+                    <div class="article-overlay"></div>
+                    <div class="article-content">
+                        <div class="article-header">
+                            <span class="category">Travel</span>
+                            <span class="read-time">6 min read</span>
+                        </div>
+                        <h1 class="article-title">Hidden Gems: Undiscovered Travel Destinations for 2025</h1>
+                        <p class="article-excerpt">Explore breathtaking locations off the beaten path that offer unique experiences away from crowded tourist spots.</p>
+                    </div>
+                </article>
+
+                <!-- Article 6 -->
+                <article class="article-card" data-article-id="article-6" data-bg="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                    <div class="article-background"></div>
+                    <div class="article-overlay"></div>
+                    <div class="article-content">
+                        <div class="article-header">
+                            <span class="category">Food</span>
+                            <span class="read-time">5 min read</span>
+                        </div>
+                        <h1 class="article-title">Plant-Based Revolution: Sustainable Cooking for Modern Life</h1>
+                        <p class="article-excerpt">Delicious and nutritious plant-based recipes that are easy to make and perfect for busy lifestyles.</p>
+                    </div>
+                </article>
+
+                <!-- Article 7 -->
+                <article class="article-card" data-article-id="article-7" data-bg="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                    <div class="article-background"></div>
+                    <div class="article-overlay"></div>
+                    <div class="article-content">
+                        <div class="article-header">
+                            <span class="category">Fitness</span>
+                            <span class="read-time">4 min read</span>
+                        </div>
+                        <h1 class="article-title">Home Workout Trends: Building Strength Without a Gym</h1>
+                        <p class="article-excerpt">Effective exercise routines you can do at home with minimal equipment for maximum results.</p>
+                    </div>
+                </article>
+
+                <!-- Article 8 -->
+                <article class="article-card" data-article-id="article-8" data-bg="https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80">
+                    <div class="article-background"></div>
+                    <div class="article-overlay"></div>
+                    <div class="article-content">
+                        <div class="article-header">
+                            <span class="category">Science</span>
+                            <span class="read-time">8 min read</span>
+                        </div>
+                        <h1 class="article-title">Climate Tech Innovations: Solutions for a Sustainable Future</h1>
+                        <p class="article-excerpt">Breakthrough technologies and innovations that are helping combat climate change and create a greener planet.</p>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Side Actions -->
+            <div class="side-actions">
+                <button class="side-btn bookmark-btn">
+                    <i class="far fa-bookmark"></i>
+                </button>
+            </div>
+        </main>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner hidden">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Search Modal -->
+        <div class="search-modal hidden" id="searchModal">
+            <div class="search-modal-content">
+                <div class="search-header">
+                    <div class="search-input-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Search articles..." id="searchInput" autocomplete="off">
+                        <button class="search-close-btn" id="searchCloseBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-results" id="searchResults">
+                    <div class="search-suggestions">
+                        <h3>Popular Searches</h3>
+                        <div class="suggestion-tags">
+                            <button class="suggestion-tag">artificial intelligence</button>
+                            <button class="suggestion-tag">remote work</button>
+                            <button class="suggestion-tag">design trends</button>
+                            <button class="suggestion-tag">digital wellness</button>
+                            <button class="suggestion-tag">sustainable living</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hamburger Menu -->
+        <div class="hamburger-menu hidden" id="hamburgerMenu">
+            <div class="menu-overlay"></div>
+            <div class="menu-content">
+                <div class="menu-header">
+                    <a href="index.html" class="menu-logo">
+                        <i class="fas fa-feather"></i>
+                        <span>BlogTok</span>
+                    </a>
+                    <button class="menu-close-btn" id="menuCloseBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <nav class="menu-nav">
+                    <ul class="menu-items">
+                        <li class="menu-item">
+                            <a href="#" class="menu-link active">
+                                <i class="fas fa-home"></i>
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <div class="menu-link" id="categoriesToggle">
+                                <i class="fas fa-th-large"></i>
+                                <span>Categories</span>
+                                <i class="fas fa-chevron-down category-chevron"></i>
+                            </div>
+                            <ul class="category-submenu" id="categorySubmenu">
+                                <li class="category-item">
+                                    <a href="#" class="category-link" onclick="clearCategoryFilter()">
+                                        <i class="fas fa-list"></i>
+                                        <span>All Articles</span>
+                                    </a>
+                                </li>
+                                <!-- Categories will be loaded here dynamically -->
+                            </ul>
+                        </li>
+                        <li class="menu-item">
+                            <a href="bookmarks.html" class="menu-link">
+                                <i class="fas fa-bookmark"></i>
+                                <span>Bookmarks</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="about.html" class="menu-link">
+                                <i class="fas fa-info-circle"></i>
+                                <span>About</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
