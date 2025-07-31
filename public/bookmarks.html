@@ -20,11 +20,125 @@
             min-height: 100vh !important;
         }
         
+        /* Galaxy Background Styling */
         .app-container {
+            position: relative;
             height: auto !important;
             min-height: 100vh !important;
-            overflow: visible !important;
+            width: 100vw;
             overflow-y: auto !important;
+            background: 
+                radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #000428 0%, #004e92 25%, #001122 50%, #000428 75%, #001a2e 100%);
+            animation: galaxyShift 30s ease infinite;
+        }
+
+        .app-container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: twinkle 10s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .app-container::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(138, 43, 226, 0.4) 0%, transparent 30%),
+                radial-gradient(circle at 85% 75%, rgba(30, 144, 255, 0.3) 0%, transparent 40%),
+                radial-gradient(circle at 50% 10%, rgba(255, 20, 147, 0.2) 0%, transparent 35%),
+                radial-gradient(circle at 75% 40%, rgba(0, 255, 127, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 25% 70%, rgba(255, 165, 0, 0.2) 0%, transparent 35%);
+            animation: nebula 25s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes galaxyShift {
+            0%, 100% { 
+                background: 
+                    radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                    radial-gradient(ellipse at bottom, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.25) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.2) 0%, transparent 50%),
+                    linear-gradient(135deg, #000428 0%, #004e92 25%, #001122 50%, #000428 75%, #001a2e 100%);
+            }
+            25% { 
+                background: 
+                    radial-gradient(ellipse at top, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
+                    radial-gradient(ellipse at bottom, rgba(255, 20, 147, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 30% 70%, rgba(30, 144, 255, 0.35) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 30%, rgba(0, 255, 127, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 50%, rgba(255, 165, 0, 0.25) 0%, transparent 50%),
+                    linear-gradient(135deg, #001122 0%, #8A2BE2 25%, #000428 50%, #004e92 75%, #001a2e 100%);
+            }
+            50% { 
+                background: 
+                    radial-gradient(ellipse at top, rgba(30, 144, 255, 0.25) 0%, transparent 50%),
+                    radial-gradient(ellipse at bottom, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 20, 147, 0.4) 0%, transparent 50%),
+                    radial-gradient(circle at 20% 80%, rgba(0, 255, 127, 0.35) 0%, transparent 50%),
+                    radial-gradient(circle at 60% 30%, rgba(255, 165, 0, 0.3) 0%, transparent 50%),
+                    linear-gradient(135deg, #004e92 0%, #FF1493 25%, #001122 50%, #8A2BE2 75%, #000428 100%);
+            }
+            75% { 
+                background: 
+                    radial-gradient(ellipse at top, rgba(255, 20, 147, 0.3) 0%, transparent 50%),
+                    radial-gradient(ellipse at bottom, rgba(30, 144, 255, 0.25) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 60%, rgba(138, 43, 226, 0.45) 0%, transparent 50%),
+                    radial-gradient(circle at 60% 40%, rgba(0, 255, 127, 0.4) 0%, transparent 50%),
+                    radial-gradient(circle at 30% 20%, rgba(255, 165, 0, 0.35) 0%, transparent 50%),
+                    linear-gradient(135deg, #8A2BE2 0%, #00FF7F 25%, #004e92 50%, #FF1493 75%, #001122 100%);
+            }
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            25% { opacity: 0.8; }
+            50% { opacity: 0.4; }
+            75% { opacity: 0.9; }
+            100% { opacity: 0.3; }
+        }
+
+        @keyframes nebula {
+            0%, 100% { 
+                opacity: 0.6;
+                transform: scale(1) rotate(0deg);
+            }
+            25% { 
+                opacity: 0.8;
+                transform: scale(1.1) rotate(90deg);
+            }
+            50% { 
+                opacity: 0.4;
+                transform: scale(1.2) rotate(180deg);
+            }
+            75% { 
+                opacity: 0.7;
+                transform: scale(1.05) rotate(270deg);
+            }
         }
         
         .main-content {
@@ -40,6 +154,8 @@
             min-height: calc(100vh - 160px);
             padding-top: 80px;
             padding-bottom: 40px;
+            position: relative;
+            z-index: 10;
         }
 
         /* Navigation bar positioning */
