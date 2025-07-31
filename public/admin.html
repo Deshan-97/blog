@@ -1692,6 +1692,26 @@
             color: white;
         }
 
+        /* Form Control Styles - AdSense Settings */
+        .form-control {
+            width: 100%;
+            min-width: 300px;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            transition: all 0.2s ease;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
         /* Form Input Error State */
         .form-control.error {
             border-color: #ef4444;
@@ -1748,6 +1768,64 @@
 
             .section-title {
                 font-size: 16px;
+            }
+
+            /* Mobile-friendly form-control styles */
+            .form-control {
+                min-width: auto;
+                padding: 14px 16px;
+                font-size: 16px; /* Prevent zoom on iOS */
+                border-radius: 8px;
+                min-height: 48px; /* Touch-friendly minimum height */
+                touch-action: manipulation;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+
+            .form-control:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                transform: none; /* Prevent zoom/movement on mobile */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-control {
+                padding: 16px;
+                font-size: 16px;
+                border-radius: 12px;
+                min-height: 52px; /* Larger touch target for small screens */
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-label {
+                font-size: 15px;
+                margin-bottom: 8px;
+            }
+        }
+
+        /* iOS Safari specific fixes for form-control */
+        @supports (-webkit-touch-callout: none) {
+            .form-control {
+                font-size: 16px; /* Prevent zoom on iOS */
+                -webkit-user-select: text;
+                user-select: text;
+                -webkit-touch-callout: default;
+            }
+        }
+
+        /* Touch and interaction improvements for form-control */
+        @media (hover: none) and (pointer: coarse) {
+            .form-control:hover {
+                border-color: #e2e8f0; /* No hover effect on touch devices */
+            }
+
+            .form-control:active {
+                transform: none; /* Prevent animation on touch */
             }
         }
 
