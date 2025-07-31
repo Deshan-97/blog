@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdSense API Test Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .ad-code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        .current-settings {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AdSense API Test Dashboard</h1>
+        <div id="status"></div>
+
+        <div class="grid">
+            <div class="section">
+                <h2>Current AdSense Settings</h2>
+                <div id="currentSettings" class="current-settings">Loading...</div>
+                <button onclick="loadCurrentSettings()">Refresh Settings</button>
+            </div>
+
+            <div class="section">
+                <h2>Update AdSense Settings</h2>
+                <form id="adsenseForm">
+                    <div class="form-group">
+                        <label for="client_id">AdSense Client ID:</label>
+                        <input type="text" id="client_id" name="adsense_client_id" placeholder="ca-pub-1234567890123456">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="enabled">AdSense Enabled:</label>
+                        <select id="enabled" name="adsense_enabled">
+                            <option value="">Don't change</option>
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="auto_ads">Auto Ads:</label>
+                        <select id="auto_ads" name="adsense_auto_ads">
+                            <option value="">Don't change</option>
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="display_ads">Display Ads:</label>
+                        <select id="display_ads" name="adsense_display_ads">
+                            <option value="">Don't change</option>
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="header_slot">Header Ad Slot ID:</label>
+                        <input type="text" id="header_slot" name="adsense_ad_slot_header" placeholder="1234567890">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sidebar_slot">Sidebar Ad Slot ID:</label>
+                        <input type="text" id="sidebar_slot" name="adsense_ad_slot_sidebar" placeholder="0987654321">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="footer_slot">Footer Ad Slot ID:</label>
+                        <input type="text" id="footer_slot" name="adsense_ad_slot_footer" placeholder="1122334455">
+                    </div>
+                    
+                    <button type="button" onclick="updateSettings('POST')">Update (Partial)</button>
+                    <button type="button" onclick="updateSettings('PUT')">Replace All</button>
+                    <button type="button" onclick="clearForm()">Clear Form</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Generate Ad Code</h2>
+            <div class="form-group">
+                <label for="position">Ad Position:</label>
+                <select id="position">
+                    <option value="header">Header</option>
+                    <option value="sidebar">Sidebar</option>
+                    <option value="footer">Footer</option>
+                </select>
+                <button onclick="generateAdCode()">Generate Ad Code</button>
+            </div>
+            <div id="adCodeResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>Test Invalid Operations</h2>
+            <button onclick="testInvalidPosition()">Test Invalid Position</button>
+            <button onclick="testEmptyUpdate()">Test Empty Update</button>
+            <button onclick="testNonExistentEndpoint()">Test Non-existent Endpoint</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        async function loadCurrentSettings() {
+            try {
+                const response = await fetch(`${API_BASE}/adsense-settings`);
+                const settings = await response.json();
+                
+                const settingsDiv = document.getElementById('currentSettings');
+                settingsDiv.innerHTML = `<pre>${JSON.stringify(settings, null, 2)}</pre>`;
+                
+                showStatus('Settings loaded successfully', 'success');
+            } catch (error) {
+                showStatus(`Error loading settings: ${error.message}`, 'error');
+            }
+        }
+
+        async function updateSettings(method) {
+            const form = document.getElementById('adsenseForm');
+            const formData = new FormData(form);
+            const data = {};
+            
+            // Only include non-empty values
+            for (const [key, value] of formData.entries()) {
+                if (value.trim() !== '') {
+                    data[key] = value;
+                }
+            }
+            
+            if (Object.keys(data).length === 0) {
+                showStatus('No data provided for update', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/adsense-settings`, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showStatus(`Settings updated successfully using ${method}`, 'success');
+                    loadCurrentSettings(); // Refresh the display
+                } else {
+                    showStatus(`Error: ${result.error || result.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function generateAdCode() {
+            const position = document.getElementById('position').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/adsense-code/${position}`);
+                const result = await response.json();
+                
+                const resultDiv = document.getElementById('adCodeResult');
+                
+                if (result.enabled) {
+                    resultDiv.innerHTML = `
+                        <h3>Ad Code for ${result.position}:</h3>
+                        <div class="ad-code">${result.code}</div>
+                        <p><strong>Client ID:</strong> ${result.client_id}</p>
+                        <p><strong>Slot ID:</strong> ${result.slot_id}</p>
+                    `;
+                    showStatus('Ad code generated successfully', 'success');
+                } else {
+                    resultDiv.innerHTML = `
+                        <h3>Ad Code Generation Result:</h3>
+                        <p class="error">Ad code could not be generated.</p>
+                        <p><strong>Reason:</strong> ${result.message || 'AdSense is disabled or not configured properly'}</p>
+                    `;
+                    showStatus('Ad code generation failed', 'error');
+                }
+            } catch (error) {
+                showStatus(`Error generating ad code: ${error.message}`, 'error');
+            }
+        }
+
+        async function testInvalidPosition() {
+            try {
+                const response = await fetch(`${API_BASE}/adsense-code/invalid-position`);
+                const result = await response.json();
+                
+                if (response.status === 400) {
+                    showStatus(`Invalid position test passed: ${result.error}`, 'success');
+                } else {
+                    showStatus('Invalid position test failed - should return 400 error', 'error');
+                }
+            } catch (error) {
+                showStatus(`Test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testEmptyUpdate() {
+            try {
+                const response = await fetch(`${API_BASE}/adsense-settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const result = await response.json();
+                
+                if (response.status === 400) {
+                    showStatus(`Empty update test passed: ${result.error}`, 'success');
+                } else {
+                    showStatus('Empty update test failed - should return 400 error', 'error');
+                }
+            } catch (error) {
+                showStatus(`Test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testNonExistentEndpoint() {
+            try {
+                const response = await fetch(`${API_BASE}/adsense-nonexistent`);
+                
+                if (response.status === 404) {
+                    showStatus('Non-existent endpoint test passed: Returns 404', 'success');
+                } else {
+                    showStatus('Non-existent endpoint test failed', 'error');
+                }
+            } catch (error) {
+                showStatus(`Test error: ${error.message}`, 'error');
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('adsenseForm').reset();
+            showStatus('Form cleared', 'info');
+        }
+
+        // Load settings when page loads
+        window.addEventListener('load', loadCurrentSettings);
+    </script>
+</body>
+</html>

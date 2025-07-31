@@ -479,42 +479,58 @@ app.get('/api/site-settings/:key', (req, res) => {
 
 // Update site settings
 app.post('/api/site-settings', (req, res) => {
-  const { site_name, site_description } = req.body;
+  const { site_name, site_description, facebookLink, twitterLink, instagramLink, youtubeLink } = req.body;
   
   if (!site_name || !site_description) {
     return res.status(400).json({ error: 'Site name and description are required' });
   }
   
-  // Update site_name
-  db.run(
-    'INSERT OR REPLACE INTO site_settings (setting_key, setting_value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
-    ['site_name', site_name],
-    function(err) {
-      if (err) {
-        console.error('Error updating site name:', err);
-        return res.status(500).json({ error: err.message });
-      }
-    }
-  );
+  // Prepare all settings to update
+  const settings = [
+    { key: 'site_name', value: site_name },
+    { key: 'site_description', value: site_description },
+    { key: 'facebookLink', value: facebookLink || '' },
+    { key: 'twitterLink', value: twitterLink || '' },
+    { key: 'instagramLink', value: instagramLink || '' },
+    { key: 'youtubeLink', value: youtubeLink || '' }
+  ];
   
-  // Update site_description
-  db.run(
-    'INSERT OR REPLACE INTO site_settings (setting_key, setting_value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
-    ['site_description', site_description],
-    function(err) {
-      if (err) {
-        console.error('Error updating site description:', err);
-        return res.status(500).json({ error: err.message });
+  let completed = 0;
+  let hasError = false;
+  
+  // Update all settings
+  settings.forEach((setting, index) => {
+    db.run(
+      'INSERT OR REPLACE INTO site_settings (setting_key, setting_value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
+      [setting.key, setting.value],
+      function(err) {
+        if (err && !hasError) {
+          hasError = true;
+          console.error(`Error updating ${setting.key}:`, err);
+          return res.status(500).json({ error: err.message });
+        }
+        
+        completed++;
+        
+        // If all settings have been processed successfully
+        if (completed === settings.length && !hasError) {
+          console.log('Site settings updated successfully');
+          res.json({ 
+            success: true, 
+            message: 'Site settings updated successfully',
+            settings: { 
+              site_name, 
+              site_description,
+              facebookLink: facebookLink || '',
+              twitterLink: twitterLink || '',
+              instagramLink: instagramLink || '',
+              youtubeLink: youtubeLink || ''
+            }
+          });
+        }
       }
-      
-      console.log('Site settings updated successfully');
-      res.json({ 
-        success: true, 
-        message: 'Site settings updated successfully',
-        settings: { site_name, site_description }
-      });
-    }
-  );
+    );
+  });
 });
 
 // ===========================================
@@ -566,6 +582,75 @@ app.post('/api/adsense-settings', (req, res) => {
     adsense_ad_slot_footer
   } = req.body;
 
+  // Only update settings that are actually provided in the request
+  const settingsToUpdate = [];
+  
+  if (adsense_client_id !== undefined) {
+    settingsToUpdate.push({ key: 'adsense_client_id', value: adsense_client_id });
+  }
+  if (adsense_enabled !== undefined) {
+    settingsToUpdate.push({ key: 'adsense_enabled', value: adsense_enabled });
+  }
+  if (adsense_auto_ads !== undefined) {
+    settingsToUpdate.push({ key: 'adsense_auto_ads', value: adsense_auto_ads });
+  }
+  if (adsense_display_ads !== undefined) {
+    settingsToUpdate.push({ key: 'adsense_display_ads', value: adsense_display_ads });
+  }
+  if (adsense_ad_slot_header !== undefined) {
+    settingsToUpdate.push({ key: 'adsense_ad_slot_header', value: adsense_ad_slot_header });
+  }
+  if (adsense_ad_slot_sidebar !== undefined) {
+    settingsToUpdate.push({ key: 'adsense_ad_slot_sidebar', value: adsense_ad_slot_sidebar });
+  }
+  if (adsense_ad_slot_footer !== undefined) {
+    settingsToUpdate.push({ key: 'adsense_ad_slot_footer', value: adsense_ad_slot_footer });
+  }
+
+  if (settingsToUpdate.length === 0) {
+    return res.status(400).json({ error: 'No valid AdSense settings provided' });
+  }
+
+  let completed = 0;
+  let hasError = false;
+
+  settingsToUpdate.forEach(setting => {
+    db.run(
+      'INSERT OR REPLACE INTO site_settings (setting_key, setting_value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)',
+      [setting.key, setting.value],
+      function(err) {
+        if (err && !hasError) {
+          hasError = true;
+          console.error('Error updating AdSense setting:', err);
+          return res.status(500).json({ error: err.message });
+        }
+        
+        completed++;
+        if (completed === settingsToUpdate.length && !hasError) {
+          console.log('AdSense settings updated successfully');
+          res.json({
+            success: true,
+            message: 'AdSense settings updated successfully',
+            settings: req.body
+          });
+        }
+      }
+    );
+  });
+});
+
+// Complete replace of all AdSense settings (PUT method)
+app.put('/api/adsense-settings', (req, res) => {
+  const {
+    adsense_client_id,
+    adsense_enabled,
+    adsense_auto_ads,
+    adsense_display_ads,
+    adsense_ad_slot_header,
+    adsense_ad_slot_sidebar,
+    adsense_ad_slot_footer
+  } = req.body;
+
   const settingsToUpdate = [
     { key: 'adsense_client_id', value: adsense_client_id || '' },
     { key: 'adsense_enabled', value: adsense_enabled || 'false' },
@@ -592,10 +677,10 @@ app.post('/api/adsense-settings', (req, res) => {
         
         completed++;
         if (completed === settingsToUpdate.length && !hasError) {
-          console.log('AdSense settings updated successfully');
+          console.log('All AdSense settings updated successfully');
           res.json({
             success: true,
-            message: 'AdSense settings updated successfully',
+            message: 'All AdSense settings updated successfully',
             settings: req.body
           });
         }

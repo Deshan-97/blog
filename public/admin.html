@@ -3385,6 +3385,12 @@
                 const siteName = document.getElementById('siteName').value.trim();
                 const siteDescription = document.getElementById('siteDescription').value.trim();
                 
+                // Get social media links
+                const facebookLink = document.getElementById('facebookLink').value.trim();
+                const twitterLink = document.getElementById('twitterLink').value.trim();
+                const instagramLink = document.getElementById('instagramLink').value.trim();
+                const youtubeLink = document.getElementById('youtubeLink').value.trim();
+                
                 if (!siteName || !siteDescription) {
                     this.showMessage('Please fill in all site settings.', 'error');
                     return;
@@ -3401,7 +3407,11 @@
                         },
                         body: JSON.stringify({
                             site_name: siteName,
-                            site_description: siteDescription
+                            site_description: siteDescription,
+                            facebookLink: facebookLink,
+                            twitterLink: twitterLink,
+                            instagramLink: instagramLink,
+                            youtubeLink: youtubeLink
                         })
                     });
                     
@@ -3412,12 +3422,19 @@
                     const result = await response.json();
                     
                     // Store site settings locally for immediate UI updates
-                    localStorage.setItem('siteSettings', JSON.stringify({ siteName, siteDescription }));
+                    localStorage.setItem('siteSettings', JSON.stringify({ 
+                        siteName, 
+                        siteDescription,
+                        facebookLink,
+                        twitterLink,
+                        instagramLink,
+                        youtubeLink
+                    }));
                     
                     // Update all instances of site name in the UI
                     this.updateSiteNameEverywhere(siteName);
                     
-                    this.showMessage('Site settings updated successfully! Changes will appear on all pages after refresh.', 'success');
+                    this.showMessage('Site settings and social media links updated successfully! Changes will appear on all pages after refresh.', 'success');
                 } catch (error) {
                     console.error('Error:', error);
                     this.showMessage('Error updating site settings. Please try again.', 'error');
@@ -3753,12 +3770,30 @@
                     // Update form inputs
                     const siteNameInput = document.getElementById('siteName');
                     const siteDescInput = document.getElementById('siteDescription');
+                    const facebookInput = document.getElementById('facebookLink');
+                    const twitterInput = document.getElementById('twitterLink');
+                    const instagramInput = document.getElementById('instagramLink');
+                    const youtubeInput = document.getElementById('youtubeLink');
                     
                     if (siteNameInput && settings.site_name) {
                         siteNameInput.value = settings.site_name;
                     }
                     if (siteDescInput && settings.site_description) {
                         siteDescInput.value = settings.site_description;
+                    }
+                    
+                    // Populate social media fields
+                    if (facebookInput && settings.facebookLink) {
+                        facebookInput.value = settings.facebookLink;
+                    }
+                    if (twitterInput && settings.twitterLink) {
+                        twitterInput.value = settings.twitterLink;
+                    }
+                    if (instagramInput && settings.instagramLink) {
+                        instagramInput.value = settings.instagramLink;
+                    }
+                    if (youtubeInput && settings.youtubeLink) {
+                        youtubeInput.value = settings.youtubeLink;
                     }
                     
                     // Update UI elements (server already handles this, but update for consistency)
@@ -3769,7 +3804,11 @@
                     // Store locally for quick access
                     localStorage.setItem('siteSettings', JSON.stringify({
                         siteName: settings.site_name,
-                        siteDescription: settings.site_description
+                        siteDescription: settings.site_description,
+                        facebookLink: settings.facebookLink || '',
+                        twitterLink: settings.twitterLink || '',
+                        instagramLink: settings.instagramLink || '',
+                        youtubeLink: settings.youtubeLink || ''
                     }));
                 } else {
                     console.warn('Could not load site settings from server, using defaults');
