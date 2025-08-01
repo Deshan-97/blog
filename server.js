@@ -23,15 +23,35 @@ const app = express();
 // Set the port number for the server (use environment variable in production)
 const PORT = process.env.PORT || 3000;
 
-// Set up and connect to the SQLite database file (use environment path)
-const dbPath = process.env.DATABASE_PATH || './db.sqlite';
+// Set up and connect to the SQLite database file (use Render-compatible path)
+const dbPath = process.env.NODE_ENV === 'production' 
+  ? '/opt/render/.data/blog.db'  // Render's persistent storage
+  : './db.sqlite';                // Local development
+
+console.log('Environment:', process.env.NODE_ENV);
+console.log('Using DB at:', dbPath);
+
+// Ensure the directory exists for production (only try on Render)
+if (process.env.NODE_ENV === 'production') {
+  const dbDir = path.dirname(dbPath);
+  try {
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+      console.log('Created database directory:', dbDir);
+    }
+  } catch (error) {
+    console.log('Directory creation skipped (not on Render):', error.message);
+  }
+}
+
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     // If there is an error connecting, print it
     console.error('Could not connect to database', err);
+    console.error('Database path attempted:', dbPath);
   } else {
     // If connection is successful, print a message
-    console.log('Connected to SQLite database');
+    console.log('Connected to SQLite database at:', dbPath);
   }
 });
 
