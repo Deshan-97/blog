@@ -1,12 +1,12 @@
-// Pull-to-refresh functionality
+// TikTok-style Pull-to-refresh functionality for all pages
 let pullToRefreshEnabled = true;
 let startY = 0;
 let currentY = 0;
-let pullThreshold = 80;
+let pullThreshold = 70;
 let isRefreshing = false;
 let pullDistance = 0;
 
-// Create pull-to-refresh indicator
+// Create TikTok-style pull refresh indicator
 function createPullRefreshIndicator() {
   let indicator = document.getElementById('pull-refresh-indicator');
   if (!indicator) {
@@ -15,23 +15,21 @@ function createPullRefreshIndicator() {
     indicator.innerHTML = '<div class="refresh-circle"></div>';
     indicator.style.cssText = `
       position: fixed;
-      top: -60px;
+      top: -50px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 2000;
+      z-index: 9999;
       transition: all 0.3s ease;
     `;
     
     const refreshCircle = indicator.querySelector('.refresh-circle');
     refreshCircle.style.cssText = `
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top: 3px solid #fff;
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid #ffffff;
       border-radius: 50%;
-      transition: all 0.3s ease;
-      background: rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
     `;
     
     document.body.appendChild(indicator);
@@ -39,33 +37,28 @@ function createPullRefreshIndicator() {
   return indicator;
 }
 
-// Show pull indicator with progress
+// Show pull indicator with progress (TikTok style)
 function showPullIndicator(distance) {
   const indicator = createPullRefreshIndicator();
   const progress = Math.min(distance / pullThreshold, 1);
   const refreshCircle = indicator.querySelector('.refresh-circle');
   
-  // Update position
-  indicator.style.top = `${-60 + (80 * progress)}px`;
+  // Update position smoothly
+  indicator.style.top = `${-50 + (70 * progress)}px`;
   
   // Rotate circle based on progress
   refreshCircle.style.transform = `rotate(${360 * progress}deg)`;
   
-  // Update colors based on progress
-  if (progress >= 1) {
-    refreshCircle.style.borderTopColor = '#4CAF50';
-    refreshCircle.style.background = 'rgba(76, 175, 80, 0.1)';
-  } else {
-    refreshCircle.style.borderTopColor = '#fff';
-    refreshCircle.style.background = 'rgba(0, 0, 0, 0.1)';
-  }
+  // Update opacity and scale
+  refreshCircle.style.opacity = Math.min(progress + 0.3, 1);
+  refreshCircle.style.transform += ` scale(${0.8 + (0.2 * progress)})`;
 }
 
 // Hide pull indicator
 function hidePullIndicator() {
   const indicator = document.getElementById('pull-refresh-indicator');
   if (indicator) {
-    indicator.style.top = '-60px';
+    indicator.style.top = '-50px';
     setTimeout(() => {
       if (indicator.parentNode) {
         indicator.parentNode.removeChild(indicator);
@@ -74,7 +67,7 @@ function hidePullIndicator() {
   }
 }
 
-// Perform refresh
+// Perform refresh (TikTok style)
 async function refreshPage() {
   if (isRefreshing) return;
   
@@ -83,46 +76,42 @@ async function refreshPage() {
   const refreshCircle = indicator.querySelector('.refresh-circle');
   
   // Show refreshing state
-  indicator.style.top = '30px';
-  refreshCircle.style.borderTopColor = '#2196F3';
-  refreshCircle.style.background = 'rgba(33, 150, 243, 0.1)';
-  
-  // Add spinning animation
-  refreshCircle.style.animation = 'spin 1s linear infinite';
+  indicator.style.top = '20px';
+  refreshCircle.style.animation = 'spin 0.8s linear infinite';
+  refreshCircle.style.opacity = '1';
+  refreshCircle.style.transform = 'scale(1)';
   
   try {
-    // Reload articles if on homepage
+    // Check if we're on the homepage with articles
     if (document.getElementById('articlesContainer')) {
+      // Homepage - reload articles dynamically
       await loadArticles(currentFilter);
+      // Success - brief pause then hide
+      await new Promise(resolve => setTimeout(resolve, 500));
+      hidePullIndicator();
+      isRefreshing = false;
     } else {
-      // For other pages, just reload
+      // All other pages (about, admin, etc.) - full page reload
+      // Add a small delay to show the refresh animation
+      await new Promise(resolve => setTimeout(resolve, 300));
       window.location.reload();
+      // Note: we don't need to reset isRefreshing here as page reloads
     }
-    
-    // Success feedback
-    refreshCircle.style.borderTopColor = '#4CAF50';
-    refreshCircle.style.background = 'rgba(76, 175, 80, 0.1)';
-    refreshCircle.style.animation = 'none';
     
   } catch (error) {
     console.error('Refresh failed:', error);
-    refreshCircle.style.borderTopColor = '#F44336';
-    refreshCircle.style.background = 'rgba(244, 67, 54, 0.1)';
-    refreshCircle.style.animation = 'none';
+    // On error, try full page reload as fallback
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
   }
-  
-  // Hide indicator after delay
-  setTimeout(() => {
-    hidePullIndicator();
-    isRefreshing = false;
-  }, 1000);
 }
 
-// Touch event handlers for pull-to-refresh
+// Touch event handlers for pull-to-refresh (works on all pages)
 document.addEventListener('touchstart', function(e) {
   if (!pullToRefreshEnabled || isRefreshing) return;
   
-  // Only enable on pages that are at the top
+  // Only enable when at the top of the page
   if (window.scrollY === 0 || document.documentElement.scrollTop === 0) {
     startY = e.touches[0].pageY;
   }
@@ -162,14 +151,20 @@ document.addEventListener('touchend', function(e) {
 }, { passive: true });
 
 // Add CSS for spin animation
-const style = document.createElement('style');
-style.textContent = `
+const pullRefreshStyle = document.createElement('style');
+pullRefreshStyle.textContent = `
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
+  
+  /* TikTok-style overscroll behavior */
+  html, body {
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 `;
-document.head.appendChild(style);
+document.head.appendChild(pullRefreshStyle);
 
 // Detect which page is loaded - only handle homepage, not admin pages
 if (document.getElementById('articlesContainer')) {
@@ -1271,17 +1266,4 @@ function addNavigationHints() {
       }
     }, 5000);
   }
-}
-
-// Register Service Worker for PWA functionality
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('SW registered: ', registration);
-      })
-      .catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
 }
