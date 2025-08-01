@@ -1,3 +1,176 @@
+// Pull-to-refresh functionality
+let pullToRefreshEnabled = true;
+let startY = 0;
+let currentY = 0;
+let pullThreshold = 80;
+let isRefreshing = false;
+let pullDistance = 0;
+
+// Create pull-to-refresh indicator
+function createPullRefreshIndicator() {
+  let indicator = document.getElementById('pull-refresh-indicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'pull-refresh-indicator';
+    indicator.innerHTML = '<div class="refresh-circle"></div>';
+    indicator.style.cssText = `
+      position: fixed;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2000;
+      transition: all 0.3s ease;
+    `;
+    
+    const refreshCircle = indicator.querySelector('.refresh-circle');
+    refreshCircle.style.cssText = `
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    `;
+    
+    document.body.appendChild(indicator);
+  }
+  return indicator;
+}
+
+// Show pull indicator with progress
+function showPullIndicator(distance) {
+  const indicator = createPullRefreshIndicator();
+  const progress = Math.min(distance / pullThreshold, 1);
+  const refreshCircle = indicator.querySelector('.refresh-circle');
+  
+  // Update position
+  indicator.style.top = `${-60 + (80 * progress)}px`;
+  
+  // Rotate circle based on progress
+  refreshCircle.style.transform = `rotate(${360 * progress}deg)`;
+  
+  // Update colors based on progress
+  if (progress >= 1) {
+    refreshCircle.style.borderTopColor = '#4CAF50';
+    refreshCircle.style.background = 'rgba(76, 175, 80, 0.1)';
+  } else {
+    refreshCircle.style.borderTopColor = '#fff';
+    refreshCircle.style.background = 'rgba(0, 0, 0, 0.1)';
+  }
+}
+
+// Hide pull indicator
+function hidePullIndicator() {
+  const indicator = document.getElementById('pull-refresh-indicator');
+  if (indicator) {
+    indicator.style.top = '-60px';
+    setTimeout(() => {
+      if (indicator.parentNode) {
+        indicator.parentNode.removeChild(indicator);
+      }
+    }, 300);
+  }
+}
+
+// Perform refresh
+async function refreshPage() {
+  if (isRefreshing) return;
+  
+  isRefreshing = true;
+  const indicator = createPullRefreshIndicator();
+  const refreshCircle = indicator.querySelector('.refresh-circle');
+  
+  // Show refreshing state
+  indicator.style.top = '30px';
+  refreshCircle.style.borderTopColor = '#2196F3';
+  refreshCircle.style.background = 'rgba(33, 150, 243, 0.1)';
+  
+  // Add spinning animation
+  refreshCircle.style.animation = 'spin 1s linear infinite';
+  
+  try {
+    // Reload articles if on homepage
+    if (document.getElementById('articlesContainer')) {
+      await loadArticles(currentFilter);
+    } else {
+      // For other pages, just reload
+      window.location.reload();
+    }
+    
+    // Success feedback
+    refreshCircle.style.borderTopColor = '#4CAF50';
+    refreshCircle.style.background = 'rgba(76, 175, 80, 0.1)';
+    refreshCircle.style.animation = 'none';
+    
+  } catch (error) {
+    console.error('Refresh failed:', error);
+    refreshCircle.style.borderTopColor = '#F44336';
+    refreshCircle.style.background = 'rgba(244, 67, 54, 0.1)';
+    refreshCircle.style.animation = 'none';
+  }
+  
+  // Hide indicator after delay
+  setTimeout(() => {
+    hidePullIndicator();
+    isRefreshing = false;
+  }, 1000);
+}
+
+// Touch event handlers for pull-to-refresh
+document.addEventListener('touchstart', function(e) {
+  if (!pullToRefreshEnabled || isRefreshing) return;
+  
+  // Only enable on pages that are at the top
+  if (window.scrollY === 0 || document.documentElement.scrollTop === 0) {
+    startY = e.touches[0].pageY;
+  }
+}, { passive: true });
+
+document.addEventListener('touchmove', function(e) {
+  if (!pullToRefreshEnabled || isRefreshing || startY === 0) return;
+  
+  currentY = e.touches[0].pageY;
+  pullDistance = currentY - startY;
+  
+  // Only show indicator if pulling down from top
+  if (pullDistance > 0 && (window.scrollY === 0 || document.documentElement.scrollTop === 0)) {
+    // Prevent default scrolling when pulling
+    if (pullDistance > 10) {
+      e.preventDefault();
+    }
+    showPullIndicator(pullDistance);
+  }
+}, { passive: false });
+
+document.addEventListener('touchend', function(e) {
+  if (!pullToRefreshEnabled || isRefreshing || startY === 0) return;
+  
+  if (pullDistance > pullThreshold) {
+    // Trigger refresh
+    refreshPage();
+  } else {
+    // Reset indicator
+    hidePullIndicator();
+  }
+  
+  // Reset values
+  startY = 0;
+  currentY = 0;
+  pullDistance = 0;
+}, { passive: true });
+
+// Add CSS for spin animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(style);
+
 // Detect which page is loaded - only handle homepage, not admin pages
 if (document.getElementById('articlesContainer')) {
   // Homepage logic for TikTok-style interface
@@ -1098,4 +1271,17 @@ function addNavigationHints() {
       }
     }, 5000);
   }
+}
+
+// Register Service Worker for PWA functionality
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('SW registered: ', registration);
+      })
+      .catch(registrationError => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
 }
