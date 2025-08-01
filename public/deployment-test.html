@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .test-item {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007cba;
+            background: #f9f9f9;
+        }
+        .status {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #005a87; }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Deployment Diagnostic Tool</h1>
+        
+        <div class="info-box">
+            <strong>Current URL:</strong> <span id="currentUrl"></span><br>
+            <strong>Environment:</strong> <span id="environment"></span>
+        </div>
+
+        <div class="test-item">
+            <h3>Test 1: Server Health Check</h3>
+            <button onclick="testHealth()">Test Health Endpoint</button>
+            <div id="healthResult"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Test 2: Login API</h3>
+            <button onclick="testLogin()">Test Login API</button>
+            <div id="loginResult"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Test 3: Site Settings API</h3>
+            <button onclick="testSiteSettings()">Test Site Settings</button>
+            <div id="settingsResult"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Test 4: Articles API</h3>
+            <button onclick="testArticles()">Test Articles API</button>
+            <div id="articlesResult"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>📋 Diagnosis Results</h3>
+            <div id="diagnosis">Click the test buttons above to diagnose your deployment.</div>
+        </div>
+
+        <div class="info-box">
+            <h4>🚀 Quick Deployment Check:</h4>
+            <p>If you're getting network errors, you likely deployed this as static files only. This app requires a Node.js backend.</p>
+            <p><strong>Supported platforms:</strong> Heroku, Railway, Render, DigitalOcean App Platform</p>
+            <p><strong>NOT supported:</strong> GitHub Pages, Netlify static, Firebase Hosting (static)</p>
+        </div>
+    </div>
+
+    <script>
+        // Set current environment info
+        document.getElementById('currentUrl').textContent = window.location.origin;
+        document.getElementById('environment').textContent = 
+            window.location.hostname === 'localhost' ? 'Local Development' : 'Production';
+
+        let testResults = {};
+
+        async function testHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            resultDiv.innerHTML = '<p>Testing health endpoint...</p>';
+            
+            try {
+                console.log('Testing health endpoint:', `${window.location.origin}/api/health`);
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    testResults.health = true;
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ SUCCESS</span>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    testResults.health = false;
+                    resultDiv.innerHTML = `
+                        <span class="status error">❌ FAILED</span>
+                        <p>Server responded with status: ${response.status}</p>
+                    `;
+                }
+            } catch (error) {
+                testResults.health = false;
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ NETWORK ERROR</span>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>This usually means:</strong> Server is not running or this is a static-only deployment</p>
+                `;
+            }
+            updateDiagnosis();
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = '<p>Testing login API...</p>';
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'test', password: 'test' })
+                });
+                
+                const data = await response.json();
+                
+                if (response.status === 401) {
+                    testResults.login = true;
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ API WORKING</span>
+                        <p>Login endpoint is responding (credentials rejected as expected)</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    testResults.login = false;
+                    resultDiv.innerHTML = `
+                        <span class="status warning">⚠️ UNEXPECTED RESPONSE</span>
+                        <p>Status: ${response.status}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                testResults.login = false;
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ NETWORK ERROR</span>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+            updateDiagnosis();
+        }
+
+        async function testSiteSettings() {
+            const resultDiv = document.getElementById('settingsResult');
+            resultDiv.innerHTML = '<p>Testing site settings API...</p>';
+            
+            try {
+                const response = await fetch('/api/site-settings');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    testResults.settings = true;
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ SUCCESS</span>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    testResults.settings = false;
+                    resultDiv.innerHTML = `
+                        <span class="status error">❌ FAILED</span>
+                        <p>Status: ${response.status}</p>
+                    `;
+                }
+            } catch (error) {
+                testResults.settings = false;
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ NETWORK ERROR</span>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+            updateDiagnosis();
+        }
+
+        async function testArticles() {
+            const resultDiv = document.getElementById('articlesResult');
+            resultDiv.innerHTML = '<p>Testing articles API...</p>';
+            
+            try {
+                const response = await fetch('/api/articles');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    testResults.articles = true;
+                    resultDiv.innerHTML = `
+                        <span class="status success">✅ SUCCESS</span>
+                        <p>Found ${data.length} articles</p>
+                        <pre>${JSON.stringify(data.slice(0, 2), null, 2)}${data.length > 2 ? '\n... and more' : ''}</pre>
+                    `;
+                } else {
+                    testResults.articles = false;
+                    resultDiv.innerHTML = `
+                        <span class="status error">❌ FAILED</span>
+                        <p>Status: ${response.status}</p>
+                    `;
+                }
+            } catch (error) {
+                testResults.articles = false;
+                resultDiv.innerHTML = `
+                    <span class="status error">❌ NETWORK ERROR</span>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+            updateDiagnosis();
+        }
+
+        function updateDiagnosis() {
+            const diagnosisDiv = document.getElementById('diagnosis');
+            const tests = Object.keys(testResults);
+            
+            if (tests.length === 0) {
+                return;
+            }
+
+            const passedTests = tests.filter(test => testResults[test]);
+            const failedTests = tests.filter(test => !testResults[test]);
+
+            let diagnosis = '<h4>📊 Test Results:</h4>';
+            diagnosis += `<p><strong>Passed:</strong> ${passedTests.length}/${tests.length}</p>`;
+
+            if (failedTests.length === 0) {
+                diagnosis += '<div class="status success">🎉 All tests passed! Your backend is working correctly.</div>';
+                diagnosis += '<p>If you\'re still having issues with the admin panel, clear your browser cache and try again.</p>';
+            } else if (failedTests.length === tests.length) {
+                diagnosis += '<div class="status error">❌ All tests failed - Backend not accessible</div>';
+                diagnosis += '<h4>💡 Solution:</h4>';
+                diagnosis += '<ul>';
+                diagnosis += '<li>You deployed only static files (HTML/CSS/JS)</li>';
+                diagnosis += '<li>You need to deploy this as a <strong>Node.js application</strong></li>';
+                diagnosis += '<li>Use platforms like Heroku, Railway, or Render</li>';
+                diagnosis += '<li>Make sure <code>server.js</code> is running</li>';
+                diagnosis += '</ul>';
+            } else {
+                diagnosis += '<div class="status warning">⚠️ Some tests failed - Partial backend issues</div>';
+                diagnosis += '<p>Some API endpoints are working, but others are not. Check server logs for errors.</p>';
+            }
+
+            diagnosisDiv.innerHTML = diagnosis;
+        }
+
+        // Auto-run health check on page load
+        setTimeout(() => {
+            testHealth();
+        }, 1000);
+    </script>
+</body>
+</html>

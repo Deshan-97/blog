@@ -339,6 +339,17 @@ app.get('/favicon.ico', (req, res) => {
   res.status(204).send(); // No content response
 });
 
+// Health check endpoint to verify server is running
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    port: PORT
+  });
+});
+
 // API endpoint to get all articles
 app.get('/api/articles', (req, res) => {
   // Query the database for all articles, ordered by creation date (newest first)

@@ -3763,8 +3763,12 @@
             };
             
             try {
-                // Load site settings from server
+                // Load site settings from server - with debugging
+                console.log('Loading site settings from:', `${window.location.origin}/api/site-settings`);
+                
                 const response = await fetch('/api/site-settings');
+                console.log('Site settings response status:', response.status);
+                
                 if (response.ok) {
                     const settings = await response.json();
                     
@@ -3829,6 +3833,23 @@
                 }
             } catch (error) {
                 console.error('Error loading site settings:', error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                
+                // Check if this is a network error
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    dashboardManager.showMessage(
+                        '❌ Cannot connect to server. This usually means:\n\n' +
+                        '1. Your server.js is not running\n' +
+                        '2. You deployed only static files (HTML/CSS/JS) without the backend\n' +
+                        '3. Your hosting platform doesn\'t support Node.js\n\n' +
+                        'This app requires a full-stack deployment (frontend + backend).', 
+                        'error', 
+                        15000
+                    );
+                } else {
+                    dashboardManager.showMessage('Failed to load site settings: ' + error.message, 'error');
+                }
                 
                 // Fallback to localStorage
                 const savedSettings = localStorage.getItem('siteSettings');
