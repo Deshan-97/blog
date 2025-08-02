@@ -16,17 +16,12 @@ body {
     user-select: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    /* TikTok-style pull-to-refresh support */
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
 }
 
 .app-container {
     position: relative;
     height: 100vh;
     width: 100vw;
-    /* Allow natural overscroll for pull-to-refresh */
-    overscroll-behavior-y: auto;
 }
 
 /* Navigation */

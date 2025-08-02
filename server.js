@@ -25,8 +25,8 @@ const PORT = process.env.PORT || 3000;
 
 // Set up and connect to the SQLite database file (use Render-compatible path)
 const dbPath = process.env.NODE_ENV === 'production' 
-  ? '/opt/render/.data/blog.db'  // Render's persistent storage
-  : './db.sqlite';                // Local development
+  ? '/tmp/blog.db'               // Render's temporary storage (free tier)
+  : './db.sqlite';               // Local development
 
 console.log('Environment:', process.env.NODE_ENV);
 console.log('Using DB at:', dbPath);
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
       console.log('Created database directory:', dbDir);
     }
   } catch (error) {
-    console.log('Directory creation skipped (not on Render):', error.message);
+    console.log('Directory creation skipped:', error.message);
   }
 }
 
@@ -190,7 +190,16 @@ db.serialize(() => {
 });
 
 // Set up multer for handling image uploads
-const uploadPath = process.env.UPLOAD_PATH || path.join(__dirname, 'public', 'uploads');
+const uploadPath = process.env.NODE_ENV === 'production' 
+  ? '/tmp/uploads'  // Render's temporary storage (free tier)
+  : path.join(__dirname, 'public', 'uploads');  // Local development
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath, { recursive: true });
+  console.log('Created uploads directory:', uploadPath);
+}
+
 const storage = multer.diskStorage({
   // Set the destination folder for uploaded files
   destination: function (req, file, cb) {
@@ -353,6 +362,13 @@ app.get('/test-form.html', (req, res) => {
 
 // Serve static files (HTML, JS, CSS, images) from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve uploaded images from the upload directory
+if (process.env.NODE_ENV === 'production') {
+  app.use('/uploads', express.static('/tmp/uploads'));
+} else {
+  app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+}
 
 // Route for favicon.ico to prevent 404 errors
 app.get('/favicon.ico', (req, res) => {
