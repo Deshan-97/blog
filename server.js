@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 3000;
 
 // Set up and connect to the SQLite database file (use Render-compatible path)
 const dbPath = process.env.NODE_ENV === 'production' 
-  ? '/tmp/blog.db'               // Render's temporary storage (free tier)
+  ? '/opt/render/.data/blog.db'  // Render's persistent storage
   : './db.sqlite';               // Local development
 
 console.log('Environment:', process.env.NODE_ENV);
@@ -191,7 +191,7 @@ db.serialize(() => {
 
 // Set up multer for handling image uploads
 const uploadPath = process.env.NODE_ENV === 'production' 
-  ? '/tmp/uploads'  // Render's temporary storage (free tier)
+  ? '/opt/render/.data/uploads'  // Render's persistent storage
   : path.join(__dirname, 'public', 'uploads');  // Local development
 
 // Create uploads directory if it doesn't exist
@@ -365,7 +365,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve uploaded images from the upload directory
 if (process.env.NODE_ENV === 'production') {
-  app.use('/uploads', express.static('/tmp/uploads'));
+  app.use('/uploads', express.static('/opt/render/.data/uploads'));
 } else {
   app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 }

@@ -4,6 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start-render": "./start.sh",
     "dev": "NODE_ENV=development node server.js",
     "production": "NODE_ENV=production node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
