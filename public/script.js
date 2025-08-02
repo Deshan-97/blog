@@ -273,17 +273,33 @@ if (document.getElementById('articlesContainer')) {
 
     function handleTouchMove(e) {
       if (isScrolling) return;
-      e.preventDefault();
       
       const currentY = e.touches[0].clientY;
       const deltaY = startY - currentY;
       
-      if (Math.abs(deltaY) > 10) {
-        if (deltaY > 50) {
+      // Check if we're at the first article and trying to pull down
+      const isPullingDownFromTop = currentIndex === 0 && deltaY < 0 && 
+                                  window.scrollY <= 10 && // Allow small margin
+                                  Math.abs(deltaY) > 20; // Ensure it's a meaningful pull
+      
+      if (isPullingDownFromTop) {
+        // Allow native pull-to-refresh by not preventing default
+        // Also ensure we're really at the top by scrolling to 0
+        if (window.scrollY > 0) {
+          window.scrollTo(0, 0);
+        }
+        return;
+      }
+      
+      // For all other cases, use TikTok-style navigation
+      e.preventDefault();
+      
+      if (Math.abs(deltaY) > 50) { // Increased threshold for better UX
+        if (deltaY > 0) {
           // Swipe up - next article
           navigateToArticle(currentIndex + 1);
-        } else if (deltaY < -50) {
-          // Swipe down - previous article
+        } else if (currentIndex > 0) {
+          // Swipe down - previous article (only if not at first article)
           navigateToArticle(currentIndex - 1);
         }
       }

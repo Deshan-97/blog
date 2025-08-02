@@ -1,0 +1,82 @@
+/* Universal Pull-to-Refresh CSS - Applied to all pages */
+
+/* Base pull-to-refresh support */
+html {
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Non-homepage pages - ensure proper scrolling */
+body:not(.homepage) {
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100vh;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Homepage-specific pull-to-refresh */
+body.homepage {
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure all main content containers support proper scrolling */
+.main-content,
+.content-wrapper,
+.page-content,
+.admin-container,
+.article-reader-container,
+.bookmarks-container,
+.settings-container,
+.about-container {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Fix for admin pages */
+.admin-panel,
+.admin-content {
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* Article reader specific */
+.article-content-wrapper {
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* Bookmarks page */
+.bookmarks-wrapper {
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* Responsive improvements for mobile */
+@media (max-width: 768px) {
+  /* Ensure touch-friendly scrolling on mobile */
+  body:not(.homepage) {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+  
+  /* Better touch targets for mobile */
+  .touchable,
+  button,
+  .btn,
+  .nav-link {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevent scroll issues on iOS */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
