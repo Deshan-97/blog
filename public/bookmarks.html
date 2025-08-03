@@ -1055,8 +1055,8 @@
                     card.addEventListener('click', (e) => {
                         if (!e.target.closest('.remove-bookmark')) {
                             const id = card.getAttribute('data-id');
-                            // Navigate to homepage with specific article
-                            window.location.href = `index.html#article-${id}`;
+                            // Navigate to article reader page with specific article
+                            window.location.href = `article-reader.html?id=${id}`;
                         }
                     });
                 });
